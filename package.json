@@ -1,0 +1,39 @@
+{
+  "name": "devconnector",
+  "version": "1.0.0",
+  "description": "Connects developers to other developers, communitied",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manujay/learningnode.git"
+  },
+  "keywords": [
+    "node",
+    "project",
+    "for",
+    "beginners"
+  ],
+  "author": "Manujay K. Yadav",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/manujay/learningnode/issues"
+  },
+  "homepage": "https://github.com/manujay/learningnode#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.5.2",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.11"
+  }
+}
