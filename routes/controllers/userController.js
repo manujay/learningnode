@@ -1,14 +1,14 @@
 const User = require("../models/User");
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const keys = require("../../config/keys");
 
 exports.test = function(req, res) {
   res.json({ message: "Test successfull" });
 };
 
 exports.create_user = function(req, res) {
-  console.log(req);
-
   User.findOne({ email: req.body.email })
     .then(user => {
       if (user) {
@@ -38,4 +38,34 @@ exports.create_user = function(req, res) {
       }
     })
     .catch(err => res.status(500).json({ message: err }));
+};
+
+exports.login_user = function(req, res) {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({ email: email }).then(user => {
+    if (!user) return res.status(404).json({ message: "User Not Found." });
+
+    bcrypt.compare(password, user.password).then(isMatch => {
+      if (isMatch) {
+        const payload = { id: user.id, name: user.name, avatar: user.avatar };
+        jwt.sign(
+          payload,
+          keys.secretOrPrivateKey,
+          { expiresIn: 3600 },
+          (err, token) => {
+            res.status(200).json({
+              success: true,
+              token: "Bearer " + token
+            });
+          }
+        );
+
+        return res;
+      }
+
+      return res.status(400).json({ message: "Invalid Email Or Password" });
+    });
+  });
 };
