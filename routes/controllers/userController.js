@@ -7,6 +7,8 @@ exports.test = function(req, res) {
 };
 
 exports.create_user = function(req, res) {
+  console.log(req);
+
   User.findOne({ email: req.body.email })
     .then(user => {
       if (user) {
