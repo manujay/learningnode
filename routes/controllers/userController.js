@@ -3,16 +3,26 @@ const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
+const validateRegisterInput = require("../../validation/register");
+const validateLoginInput = require("../../validation/login");
 
 exports.test = function(req, res) {
   res.json({ message: "Test successfull" });
 };
 
 exports.create_user = function(req, res) {
+  const { errors, isValid } = validateRegisterInput(req.body);
+
+  //Check for validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   User.findOne({ email: req.body.email })
     .then(user => {
       if (user) {
-        return res.status(400).json({ email: "Email already exists" });
+        errors.email = "Email already exists";
+        return res.status(400).json(errors);
       } else {
         const avatar = gravatar.url(req.body.email, {
           s: "200", //Size
@@ -41,11 +51,21 @@ exports.create_user = function(req, res) {
 };
 
 exports.login_user = function(req, res) {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  //Check for validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const email = req.body.email;
   const password = req.body.password;
 
   User.findOne({ email: email }).then(user => {
-    if (!user) return res.status(404).json({ message: "User Not Found." });
+    if (!user) {
+      errors.user = "User Not Found.";
+      return res.status(404).json(errors);
+    }
 
     bcrypt.compare(password, user.password).then(isMatch => {
       if (isMatch) {
@@ -63,9 +83,10 @@ exports.login_user = function(req, res) {
         );
 
         return res;
+      } else {
+        errors.password = "Invalid Email Or Password";
+        return res.status(400).json(errors);
       }
-
-      return res.status(400).json({ message: "Invalid Email Or Password" });
     });
   });
 };
